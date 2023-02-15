@@ -1,6 +1,6 @@
 package org.acme.controller;
 
-import java.util.List;
+import java.util.List; 
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -42,7 +42,7 @@ public class ProductController {
 		}
 
 	}
-
+//Adicionando features extras de alterar e deletar pelo id do produto
 	@PUT
 	@Path("/{id}")
 	@Transactional
