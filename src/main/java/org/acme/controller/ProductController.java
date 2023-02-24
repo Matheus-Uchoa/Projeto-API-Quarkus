@@ -1,6 +1,6 @@
 package org.acme.controller;
 
-import java.util.List; 
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 
 import org.acme.dto.ProductDTO;
 import org.acme.service.ProductService;
+import org.hibernate.internal.build.AllowPrintStacktrace;
 
 @Path("/api/products")
 public class ProductController {
@@ -30,6 +31,13 @@ public class ProductController {
 
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/{id}")
+	public ProductDTO getProductByID(@PathParam("id") Long id) {
+		return productService.getProductByID(id);
+	}
+
 	@POST
 	@Transactional
 	public Response saveProduct(ProductDTO product) {
@@ -42,6 +50,7 @@ public class ProductController {
 		}
 
 	}
+
 //Adicionando features extras de alterar e deletar pelo id do produto
 	@PUT
 	@Path("/{id}")
@@ -60,13 +69,16 @@ public class ProductController {
 	@DELETE
 	@Path("/{id}")
 	@Transactional
+
 	public Response deleteProduct(@PathParam("id") Long id) {
+
 		try {
 			productService.deleteProduct(id);
 			return Response.ok().build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.serverError().build();
+
 		}
 
 	}
