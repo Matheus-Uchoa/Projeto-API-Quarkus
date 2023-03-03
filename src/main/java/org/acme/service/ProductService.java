@@ -23,12 +23,28 @@ public class ProductService {
 		});
 		return products;
 	}
-public ProductDTO getProductByID(Long id){
-	productRepository.findById(id);
-	ProductEntity produto = productRepository.findById(id);
-	return mapProductEntityToDTO(produto);
 
-}
+	public ProductDTO getProductByID(Long id) {
+
+		ProductEntity produto = productRepository.findById(id);
+		return mapProductEntityToDTO(produto);
+
+	}
+
+	public ProductDTO getProductByName(String name) {
+		ProductEntity produto = productRepository.findByName(name);
+		return mapProductEntityToDTO(produto);
+
+	}
+
+	public List<ProductDTO> getProductByNameQuery(String name) {
+		List<ProductDTO> products = new ArrayList<>();
+		productRepository.findByNameQuery(name).stream().forEach(item -> {
+			products.add(mapProductEntityToDTO(item));
+		});
+		return products;
+	}
+
 	public void createNewProduct(ProductDTO product) {
 		productRepository.persist(mapProductDTOToEntity(product));
 	}

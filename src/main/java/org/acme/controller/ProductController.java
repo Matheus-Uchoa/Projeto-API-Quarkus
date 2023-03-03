@@ -16,7 +16,6 @@ import javax.ws.rs.core.Response;
 
 import org.acme.dto.ProductDTO;
 import org.acme.service.ProductService;
-import org.hibernate.internal.build.AllowPrintStacktrace;
 
 @Path("/api/products")
 public class ProductController {
@@ -38,6 +37,20 @@ public class ProductController {
 		return productService.getProductByID(id);
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/search/{name}")
+	public ProductDTO getProductByName(@PathParam("name") String name) {
+		return productService.getProductByName(name);
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("searchLike/{name}")
+	public List<ProductDTO> getProductsByNameQuery(@PathParam("name") String name) {
+		return productService.getProductByNameQuery(name);
+	}
+
 	@POST
 	@Transactional
 	public Response saveProduct(ProductDTO product) {
@@ -51,7 +64,6 @@ public class ProductController {
 
 	}
 
-//Adicionando features extras de alterar e deletar pelo id do produto
 	@PUT
 	@Path("/{id}")
 	@Transactional
