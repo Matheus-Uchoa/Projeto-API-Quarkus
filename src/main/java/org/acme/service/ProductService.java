@@ -2,12 +2,15 @@ package org.acme.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.acme.dto.ProductDTO;
+import org.acme.dto.ProductResponseDTO;
 import org.acme.entity.ProductEntity;
+import org.acme.repository.BrandRepository;
 import org.acme.repository.ProductRepository;
 
 @ApplicationScoped
@@ -16,37 +19,48 @@ public class ProductService {
 	@Inject // Fazer injeção de dependências de um objeto
 	ProductRepository productRepository;
 
-	public List<ProductDTO> getAllProducts() {
-		List<ProductDTO> products = new ArrayList<>();
-		productRepository.findAll().stream().forEach(item -> {
-			products.add(mapProductEntityToDTO(item));
-		});
-		return products;
+	@Inject
+	BrandRepository brandRepository;
+
+	public List<ProductResponseDTO> getAllProducts() {
+		return productRepository.findAll().stream().map(product -> new ProductResponseDTO(product))
+				.collect(Collectors.toList());
 	}
 
-	public ProductDTO getProductByID(Long id) {
+	public ProductResponseDTO getProductByID(Long id) {
 
-		ProductEntity produto = productRepository.findById(id);
-		return mapProductEntityToDTO(produto);
+		ProductEntity product = productRepository.findById(id);
+		ProductResponseDTO response = new ProductResponseDTO(product);
 
-	}
-
-	public ProductDTO getProductByName(String name) {
-		ProductEntity produto = productRepository.findByName(name);
-		return mapProductEntityToDTO(produto);
+		return response;
 
 	}
 
-	public List<ProductDTO> getProductByNameQuery(String name) {
-		List<ProductDTO> products = new ArrayList<>();
+	public ProductResponseDTO getProductByName(String name) {
+		ProductEntity product = productRepository.findByName(name);
+
+		ProductResponseDTO response = new ProductResponseDTO(product);
+		return response;
+
+	}
+
+	public List<ProductResponseDTO> getProductByNameQuery(String name) {
+
+		List<ProductResponseDTO> responses = new ArrayList<>();
 		productRepository.findByNameQuery(name).stream().forEach(item -> {
-			products.add(mapProductEntityToDTO(item));
+			responses.add(new ProductResponseDTO(item));
 		});
-		return products;
+		return responses;
 	}
 
-	public void createNewProduct(ProductDTO product) {
-		productRepository.persist(mapProductDTOToEntity(product));
+	public ProductResponseDTO createNewProduct(ProductDTO product) {
+		ProductEntity productEntity = new ProductEntity();
+
+		productEntity = mapProductDTOToEntity(product);
+
+		productRepository.persist(productEntity);
+
+		return new ProductResponseDTO(productEntity);
 	}
 
 	public void changeProduct(Long id, ProductDTO product) {
@@ -57,6 +71,7 @@ public class ProductService {
 		productEntity.setModel(product.getModel());
 		productEntity.setDescription(product.getDescription());
 		productEntity.setPrice(product.getPrice());
+		productEntity.setBrand(brandRepository.findById(product.getIdBrand()));
 
 		productRepository.persist(productEntity);
 
@@ -66,17 +81,6 @@ public class ProductService {
 		productRepository.deleteById(id);
 	}
 
-	private ProductDTO mapProductEntityToDTO(ProductEntity productEntity) {
-		ProductDTO product = new ProductDTO();
-		product.setName(productEntity.getName());
-		product.setDescription(productEntity.getDescription());
-		product.setCategory(productEntity.getCategory());
-		product.setModel(productEntity.getModel());
-		product.setPrice(productEntity.getPrice());
-
-		return product;
-	}
-
 	private ProductEntity mapProductDTOToEntity(ProductDTO productDTO) {
 		ProductEntity product = new ProductEntity();
 		product.setName(productDTO.getName());
@@ -84,6 +88,7 @@ public class ProductService {
 		product.setCategory(productDTO.getCategory());
 		product.setModel(productDTO.getModel());
 		product.setPrice(productDTO.getPrice());
+		product.setBrand(brandRepository.findById(productDTO.getIdBrand()));
 
 		return product;
 	}

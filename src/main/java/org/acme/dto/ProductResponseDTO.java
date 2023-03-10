@@ -1,24 +1,30 @@
 package org.acme.dto;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.jackson.Jacksonized;
+import org.acme.entity.ProductEntity;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Jacksonized
-public class ProductDTO {
-
+public class ProductResponseDTO {
 	private String name;
 	private String description;
 	private String category;
 	private String model;
 	private BigDecimal price;
-	private long idBrand;
+	private Map<String, Object> brand;
+
+	public ProductResponseDTO(ProductEntity product) {
+		this.name = product.getName();
+		this.description = product.getDescription();
+		this.category = product.getCategory();
+		this.model = product.getModel();
+		this.price = product.getPrice();
+		this.brand = new HashMap<String, Object>();
+		this.brand.put("name", product.getBrand().getName());
+		this.brand.put("industry", product.getBrand().getIndustry());
+		this.brand.put("year founded", product.getBrand().getYearFounded());
+	}
 
 	public String getName() {
 		return name;
@@ -60,12 +66,12 @@ public class ProductDTO {
 		this.price = price;
 	}
 
-	public long getIdBrand() {
-		return idBrand;
+	public Map<String, Object> getBrand() {
+		return brand;
 	}
 
-	public void setIdBrand(long idBrand) {
-		this.idBrand = idBrand;
+	public void setBrand(Map<String, Object> brand) {
+		this.brand = brand;
 	}
 
 }

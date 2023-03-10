@@ -15,6 +15,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.acme.dto.ProductDTO;
+import org.acme.dto.ProductResponseDTO;
+
 import org.acme.service.ProductService;
 
 @Path("/api/products")
@@ -25,7 +27,7 @@ public class ProductController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ProductDTO> findAllProducts() {
+	public List<ProductResponseDTO> findAllProducts() {
 		return productService.getAllProducts();
 
 	}
@@ -33,34 +35,29 @@ public class ProductController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{id}")
-	public ProductDTO getProductByID(@PathParam("id") Long id) {
+	public ProductResponseDTO getProductByID(@PathParam("id") Long id) {
 		return productService.getProductByID(id);
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/search/{name}")
-	public ProductDTO getProductByName(@PathParam("name") String name) {
+	public ProductResponseDTO getProductByName(@PathParam("name") String name) {
 		return productService.getProductByName(name);
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("searchLike/{name}")
-	public List<ProductDTO> getProductsByNameQuery(@PathParam("name") String name) {
+	public List<ProductResponseDTO> getProductsByNameQuery(@PathParam("name") String name) {
 		return productService.getProductByNameQuery(name);
 	}
 
 	@POST
 	@Transactional
-	public Response saveProduct(ProductDTO product) {
-		try {
-			productService.createNewProduct(product);
-			return Response.ok().build();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return Response.serverError().build();
-		}
+	public ProductResponseDTO saveProduct(ProductDTO product) {
+
+		return productService.createNewProduct(product);
 
 	}
 
