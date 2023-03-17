@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -13,10 +14,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.acme.dto.ProductDTO;
 import org.acme.dto.ProductResponseDTO;
-
 import org.acme.service.ProductService;
 
 @Path("/api/products")
@@ -55,19 +56,25 @@ public class ProductController {
 
 	@POST
 	@Transactional
-	public ProductResponseDTO saveProduct(ProductDTO product) {
+	public Response saveProduct(@Valid ProductDTO product) {
 
-		return productService.createNewProduct(product);
+		try {
+			ProductResponseDTO productdto = productService.createNewProduct(product);
+			return Response.status(Status.CREATED).entity(productdto).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.serverError().build();
+		}
 
 	}
 
 	@PUT
 	@Path("/{id}")
 	@Transactional
-	public Response changeProduct(@PathParam("id") Long id, ProductDTO product) {
+	public Response changeProduct(@PathParam("id") Long id, @Valid ProductDTO product) {
 		try {
 			productService.changeProduct(id, product);
-			return Response.ok().build();
+			return Response.status(Status.NO_CONTENT).entity(product).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.serverError().build();

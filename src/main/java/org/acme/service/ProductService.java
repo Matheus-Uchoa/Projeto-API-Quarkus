@@ -2,10 +2,14 @@ package org.acme.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 
 import org.acme.dto.ProductDTO;
 import org.acme.dto.ProductResponseDTO;
@@ -21,6 +25,9 @@ public class ProductService {
 
 	@Inject
 	BrandRepository brandRepository;
+
+	@Inject
+	Validator validator;
 
 	public List<ProductResponseDTO> getAllProducts() {
 		return productRepository.findAll().stream().map(product -> new ProductResponseDTO(product))
@@ -54,6 +61,10 @@ public class ProductService {
 	}
 
 	public ProductResponseDTO createNewProduct(ProductDTO product) {
+		Set<ConstraintViolation<ProductDTO>> violations = validator.validate(product);
+		if (!violations.isEmpty())
+			throw new ConstraintViolationException(violations);
+
 		ProductEntity productEntity = new ProductEntity();
 
 		productEntity = mapProductDTOToEntity(product);

@@ -2,6 +2,13 @@ package org.acme.dto;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
+
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,13 +18,22 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @NoArgsConstructor
 @Jacksonized
+@Schema(description = "Product data transfer Object")
 public class ProductDTO {
 
+	@NotBlank(message = "O nome deve ser informado.")
 	private String name;
+
+	@NotBlank(message = "O produto deve conter uma descrição")
+	@Size(min = 10, max = 100)
 	private String description;
 	private String category;
 	private String model;
+	
+	@Positive(message = "O preço deve ser um valor positivo")
 	private BigDecimal price;
+	
+	@NotNull(message = "O campo idBrand deve ser informado.")
 	private long idBrand;
 
 	public String getName() {
